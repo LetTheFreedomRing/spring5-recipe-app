@@ -10,11 +10,13 @@
         <thead th:name="'Recipes'">Recipes</thead>
         <tbody>
         <tr>
-            <td>Recipe description</td>
+            <th>ID</th>
+            <th>Description</th>
         </tr>
         <th:block th:each="recipe : ${recipes}">
             <tr>
-                <td th:text="${recipe.description}">...</td>
+                <td th:text="${recipe.id}"></td>
+                <td th:text="${recipe.description}"></td>
             </tr>
         </th:block>
         </tbody>
