@@ -4,6 +4,7 @@ import guru.springframework.model.*;
 import guru.springframework.repositories.CategoryRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -45,6 +47,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         recipeRepository.saveAll(getRecipes());
+        log.debug("Loaded data on bootstrap");
     }
 
     private List<Recipe> getRecipes() {
@@ -90,6 +93,7 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         guacamole.addIngredient(new Ingredient("Ripe tomato, seeds and pulp removed, chopped", new BigDecimal(0.5), unit));
         guacamole.setNotes(guacamoleNotes);
 
+        log.debug("Created recipe : " + guacamole);
         recipes.add(0, guacamole);
 
         Recipe tacos = new Recipe();
@@ -129,6 +133,8 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         tacos.addIngredient(new Ingredient("Lime, cut into wedges", new BigDecimal(1), unit));
 
         recipes.add(1, tacos);
+
+        log.debug("Created recipe : " + tacos);
         return recipes;
     }
 }
