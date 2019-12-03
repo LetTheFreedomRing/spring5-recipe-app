@@ -3,23 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Recipe index page</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+            integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+            crossorigin="anonymous"></script>
+
 </head>
 <body>
-    <h2 th:text="'Welcome'">Welcome</h2>
-    <table>
-        <thead th:name="'Recipes'">Recipes</thead>
-        <tbody>
-        <tr>
-            <th>ID</th>
-            <th>Description</th>
-        </tr>
-        <th:block th:each="recipe : ${recipes}">
-            <tr>
-                <td th:text="${recipe.id}"></td>
-                <td th:text="${recipe.description}"></td>
-            </tr>
-        </th:block>
-        </tbody>
-    </table>
+    <div class="row justify-content-center">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+
+                <div class="card-header bg-primary text-light">
+                    <h5 class="card-title">My Recipes!</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive" th:if="${not #lists.isEmpty(recipes)}">
+                        <table class="table table-hover">
+                            <thead class="thead-inverse" th:name="'Recipes'">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <th:block th:each="recipe : ${recipes}">
+                                <tr>
+                                    <td th:text="${recipe.id}"></td>
+                                    <td th:text="${recipe.description}"></td>
+                                </tr>
+                            </th:block>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
