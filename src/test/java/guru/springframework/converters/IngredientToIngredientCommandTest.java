@@ -2,6 +2,7 @@ package guru.springframework.converters;
 
 import guru.springframework.commands.IngredientCommand;
 import guru.springframework.model.Ingredient;
+import guru.springframework.model.Recipe;
 import guru.springframework.model.UnitOfMeasure;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,8 @@ public class IngredientToIngredientCommandTest {
     static final String INGREDIENT_DESCRIPTION = "dummy";
     static final BigDecimal INGREDIENT_AMOUNT = new BigDecimal(1);
 
+    static final Long RECIPE_ID = 1L;
+
     static final Long UOM_ID = 2L;
 
     @Before
@@ -29,8 +32,11 @@ public class IngredientToIngredientCommandTest {
     @Test
     @Transactional
     public void convert() {
+        Recipe recipe = new Recipe();
+        recipe.setId(RECIPE_ID);
         Ingredient ingredient = new Ingredient();
         ingredient.setId(INGREDIENT_ID);
+        ingredient.setRecipe(recipe);
         ingredient.setDescription(INGREDIENT_DESCRIPTION);
         ingredient.setAmount(INGREDIENT_AMOUNT);
         UnitOfMeasure uom = new UnitOfMeasure();
@@ -43,12 +49,16 @@ public class IngredientToIngredientCommandTest {
         assertEquals(INGREDIENT_AMOUNT, actual.getAmount());
         assertEquals(INGREDIENT_DESCRIPTION, actual.getDescription());
         assertEquals(UOM_ID, actual.getUom().getId());
+        assertEquals(RECIPE_ID, actual.getRecipeId());
     }
 
     @Test
     public void convertWithNullUom() {
+        Recipe recipe = new Recipe();
+        recipe.setId(RECIPE_ID);
         Ingredient ingredient = new Ingredient();
         ingredient.setId(INGREDIENT_ID);
+        ingredient.setRecipe(recipe);
         ingredient.setDescription(INGREDIENT_DESCRIPTION);
         ingredient.setAmount(INGREDIENT_AMOUNT);
         ingredient.setUom(null);
@@ -57,6 +67,7 @@ public class IngredientToIngredientCommandTest {
         assertEquals(INGREDIENT_ID, actual.getId());
         assertEquals(INGREDIENT_AMOUNT, actual.getAmount());
         assertEquals(INGREDIENT_DESCRIPTION, actual.getDescription());
+        assertEquals(RECIPE_ID, actual.getRecipeId());
         assertNull(actual.getUom());
     }
 
