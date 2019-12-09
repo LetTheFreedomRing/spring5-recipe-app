@@ -36,7 +36,7 @@ public class RecipeControllerTest {
         Recipe recipe = new Recipe();
         recipe.setId(recipeId);
         Mockito.when(recipeService.getRecipeById(ArgumentMatchers.anyLong())).thenReturn(recipe);
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/recipe/show/" + recipeId))
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/recipe/" + recipeId + "/show"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("recipe/show"))
                 .andExpect(MockMvcResultMatchers.model().attribute("recipe", recipe));
@@ -57,7 +57,19 @@ public class RecipeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/recipe/"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/show/" + RECIPE_ID));
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/" + RECIPE_ID + "/show"));
         Mockito.verify(recipeService, Mockito.times(1)).saveRecipeCommand(ArgumentMatchers.any());
+    }
+
+    @Test
+    public void updateRecipe() throws Exception {
+        RecipeCommand command = new RecipeCommand();
+        command.setId(RECIPE_ID);
+        Mockito.when(recipeService.getCommandById(ArgumentMatchers.any())).thenReturn(command);
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/" + RECIPE_ID + "/update"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("recipe/recipeform"))
+                .andExpect(MockMvcResultMatchers.model().attribute("recipe", command));
+        Mockito.verify(recipeService, Mockito.times(1)).getCommandById(ArgumentMatchers.anyLong());
     }
 }

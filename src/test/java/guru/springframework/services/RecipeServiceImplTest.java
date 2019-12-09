@@ -1,5 +1,6 @@
 package guru.springframework.services;
 
+import guru.springframework.commands.RecipeCommand;
 import guru.springframework.converters.RecipeCommandToRecipe;
 import guru.springframework.converters.RecipeToRecipeCommand;
 import guru.springframework.model.Recipe;
@@ -61,6 +62,21 @@ public class RecipeServiceImplTest {
 
         Recipe foundRecipe = recipeService.getRecipeById(recipeId);
         assertEquals(recipeId, foundRecipe.getId());
+    }
+
+    @Test
+    public void getCommandById() {
+        Long recipeId = 1L;
+        Recipe recipe = new Recipe();
+        recipe.setId(recipeId);
+        RecipeCommand command = new RecipeCommand();
+        command.setId(recipeId);
+        Mockito.when(recipeConverter.convert(ArgumentMatchers.any())).thenReturn(command);
+        Mockito.when(recipeRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(recipe));
+
+        RecipeCommand foundCommand = recipeService.getCommandById(recipeId);
+        assertEquals(recipeId, foundCommand.getId());
+        Mockito.verify(recipeRepository, Mockito.times(1)).findById(ArgumentMatchers.anyLong());
     }
 
 }
