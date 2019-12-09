@@ -7,6 +7,7 @@ import guru.springframework.commands.RecipeCommand;
 import guru.springframework.model.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
 
@@ -58,6 +59,7 @@ public class RecipeCommandToRecipeTest {
     }
 
     @Test
+    @Transactional
     public void convert() {
         RecipeCommand command = new RecipeCommand();
         command.setId(RECIPE_ID);

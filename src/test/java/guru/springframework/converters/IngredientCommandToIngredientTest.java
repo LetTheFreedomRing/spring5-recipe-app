@@ -5,6 +5,7 @@ import guru.springframework.commands.UnitOfMeasureCommand;
 import guru.springframework.model.Ingredient;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -44,6 +45,7 @@ public class IngredientCommandToIngredientTest {
     }
 
     @Test
+    @Transactional
     public void convertWithNullUom() {
         IngredientCommand command = new IngredientCommand();
         command.setId(INGREDIENT_ID);

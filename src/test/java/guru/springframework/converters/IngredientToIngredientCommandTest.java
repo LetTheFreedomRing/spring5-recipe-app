@@ -5,6 +5,7 @@ import guru.springframework.model.Ingredient;
 import guru.springframework.model.UnitOfMeasure;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -26,6 +27,7 @@ public class IngredientToIngredientCommandTest {
     }
 
     @Test
+    @Transactional
     public void convert() {
         Ingredient ingredient = new Ingredient();
         ingredient.setId(INGREDIENT_ID);

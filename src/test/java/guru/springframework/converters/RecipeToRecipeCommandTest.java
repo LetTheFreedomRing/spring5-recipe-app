@@ -4,6 +4,7 @@ import guru.springframework.commands.RecipeCommand;
 import guru.springframework.model.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -56,6 +57,7 @@ public class RecipeToRecipeCommandTest {
     }
 
     @Test
+    @Transactional
     public void convert() {
         Recipe recipe = new Recipe();
         recipe.setId(RECIPE_ID);
