@@ -59,11 +59,20 @@ public class IngredientServiceImpl implements IngredientService {
             recipe.addIngredient(ingredientCommandConverter.convert(command));
         }
         Recipe savedRecipe = recipeRepository.save(recipe);
-        // no need to check if ingredient is present, since we know that it exists, because we saved it line before
-        return ingredientConverter.convert(savedRecipe.getIngredients()
+        Optional<Ingredient> savedIngredient = savedRecipe.getIngredients()
                 .stream()
                 .filter(ingredient -> ingredient.getId().equals(command.getId()))
-                .findFirst()
-                .get());
+                .findFirst();
+
+        if (!savedIngredient.isPresent()) {
+            savedIngredient = savedRecipe.getIngredients()
+                    .stream()
+                    .filter(ingredient -> ingredient.getDescription().equals(command.getDescription()))
+                    .filter(ingredient -> ingredient.getAmount().equals(command.getAmount()))
+                    .filter(ingredient -> ingredient.getUom().getId().equals(command.getUom().getId()))
+                    .findFirst();
+        }
+
+        return ingredientConverter.convert(savedIngredient.get());
     }
 }

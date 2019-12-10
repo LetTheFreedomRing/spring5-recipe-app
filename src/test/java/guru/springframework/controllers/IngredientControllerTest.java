@@ -88,4 +88,20 @@ public class IngredientControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient"));
         Mockito.verify(ingredientService, Mockito.times(1)).saveCommand(ArgumentMatchers.any());
     }
+
+    @Test
+    public void newIngredient() throws Exception {
+        Long recipeID = 1L;
+        RecipeCommand command = new RecipeCommand();
+        command.setId(recipeID);
+
+        Mockito.when(recipeService.getCommandById(ArgumentMatchers.anyLong())).thenReturn(command);
+        Mockito.when(uomService.listAllUoms()).thenReturn(new HashSet<>());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/" + recipeID + "/ingredient/new"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/ingredientform"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient", "uomList"));
+        Mockito.verify(recipeService, Mockito.times(1)).getCommandById(ArgumentMatchers.anyLong());
+    }
 }
