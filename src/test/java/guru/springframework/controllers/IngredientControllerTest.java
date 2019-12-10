@@ -104,4 +104,13 @@ public class IngredientControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient", "uomList"));
         Mockito.verify(recipeService, Mockito.times(1)).getCommandById(ArgumentMatchers.anyLong());
     }
+
+    @Test
+    public void deleteIngredient() throws Exception {
+        Long recipeId = 1L;
+        mockMvc.perform(MockMvcRequestBuilders.post("/recipe/" + recipeId + "/ingredient/1/delete"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/" + recipeId +"/ingredients"));
+        Mockito.verify(ingredientService, Mockito.times(1)).deleteById(ArgumentMatchers.anyLong());
+    }
 }

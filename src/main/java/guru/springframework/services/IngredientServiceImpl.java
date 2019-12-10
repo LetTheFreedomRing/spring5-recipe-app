@@ -5,6 +5,7 @@ import guru.springframework.converters.IngredientCommandToIngredient;
 import guru.springframework.converters.IngredientToIngredientCommand;
 import guru.springframework.model.Ingredient;
 import guru.springframework.model.Recipe;
+import guru.springframework.repositories.IngredientRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,20 @@ public class IngredientServiceImpl implements IngredientService {
     private final IngredientToIngredientCommand ingredientConverter;
     private final IngredientCommandToIngredient ingredientCommandConverter;
     private final RecipeRepository recipeRepository;
+    private final IngredientRepository ingredientRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
 
     public IngredientServiceImpl(RecipeService recipeService,
                                  IngredientToIngredientCommand ingredientConverter,
                                  IngredientCommandToIngredient ingredientCommandConverter,
                                  RecipeRepository recipeRepository,
+                                 IngredientRepository ingredientRepository,
                                  UnitOfMeasureRepository unitOfMeasureRepository) {
         this.recipeService = recipeService;
         this.ingredientConverter = ingredientConverter;
         this.ingredientCommandConverter = ingredientCommandConverter;
         this.recipeRepository = recipeRepository;
+        this.ingredientRepository = ingredientRepository;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
@@ -74,5 +78,10 @@ public class IngredientServiceImpl implements IngredientService {
         }
 
         return ingredientConverter.convert(savedIngredient.get());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        ingredientRepository.deleteById(id);
     }
 }
