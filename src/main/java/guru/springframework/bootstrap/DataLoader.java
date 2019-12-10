@@ -112,6 +112,11 @@ public class DataLoader implements ApplicationListener<ContextRefreshedEvent> {
         tacos.getCategories().add(american);
         tacos.setDescription("Spicy Grilled Chicken Tacos Recipe");
 
+        Notes tacosNotes = new Notes();
+        tacosNotes.setRecipeNotes("Dummy notes for tacos");
+
+        tacos.setNotes(tacosNotes);
+
         tacos.addIngredient(new Ingredient("Ancho chili powder", new BigDecimal(2), tablespoon));
         tacos.addIngredient(new Ingredient("Dried oregano", new BigDecimal(1), teaspoon));
         tacos.addIngredient(new Ingredient("Salt", new BigDecimal(0.5), teaspoon));

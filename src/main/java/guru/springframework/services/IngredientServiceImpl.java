@@ -1,7 +1,12 @@
 package guru.springframework.services;
 
 import guru.springframework.commands.IngredientCommand;
+import guru.springframework.converters.IngredientCommandToIngredient;
 import guru.springframework.converters.IngredientToIngredientCommand;
+import guru.springframework.model.Ingredient;
+import guru.springframework.model.Recipe;
+import guru.springframework.repositories.RecipeRepository;
+import guru.springframework.repositories.UnitOfMeasureRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -10,21 +15,55 @@ import java.util.Optional;
 public class IngredientServiceImpl implements IngredientService {
 
     private final RecipeService recipeService;
-    private final IngredientToIngredientCommand converter;
+    private final IngredientToIngredientCommand ingredientConverter;
+    private final IngredientCommandToIngredient ingredientCommandConverter;
+    private final RecipeRepository recipeRepository;
+    private final UnitOfMeasureRepository unitOfMeasureRepository;
 
-    public IngredientServiceImpl(RecipeService recipeService, IngredientToIngredientCommand converter) {
+    public IngredientServiceImpl(RecipeService recipeService,
+                                 IngredientToIngredientCommand ingredientConverter,
+                                 IngredientCommandToIngredient ingredientCommandConverter,
+                                 RecipeRepository recipeRepository,
+                                 UnitOfMeasureRepository unitOfMeasureRepository) {
         this.recipeService = recipeService;
-        this.converter = converter;
+        this.ingredientConverter = ingredientConverter;
+        this.ingredientCommandConverter = ingredientCommandConverter;
+        this.recipeRepository = recipeRepository;
+        this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
     @Override
     public IngredientCommand getCommandById(Long recipeId, Long ingredientId) {
         Optional<IngredientCommand> optionalIngredient = recipeService.getRecipeById(recipeId).getIngredients().stream()
                 .filter(ingredient -> ingredient.getId().equals(ingredientId))
-                .map(converter::convert).findFirst();
+                .map(ingredientConverter::convert).findFirst();
         if (!optionalIngredient.isPresent()) {
             throw new RuntimeException("Ingredient with id " + ingredientId + " not found!");
         }
         return optionalIngredient.get();
+    }
+
+    @Override
+    public IngredientCommand saveCommand(IngredientCommand command) {
+        Recipe recipe = recipeService.getRecipeById(command.getRecipeId());
+        Optional<Ingredient> optionalIngredient = recipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getId().equals(command.getId()))
+                .findFirst();
+        if (optionalIngredient.isPresent()) {
+            Ingredient found = optionalIngredient.get();
+            found.setDescription(command.getDescription());
+            found.setAmount(command.getAmount());
+            found.setUom(unitOfMeasureRepository.findById(command.getUom().getId())
+                    .orElseThrow(() -> new RuntimeException("UOM not found!")));
+        } else {
+            recipe.addIngredient(ingredientCommandConverter.convert(command));
+        }
+        Recipe savedRecipe = recipeRepository.save(recipe);
+        // no need to check if ingredient is present, since we know that it exists, because we saved it line before
+        return ingredientConverter.convert(savedRecipe.getIngredients()
+                .stream()
+                .filter(ingredient -> ingredient.getId().equals(command.getId()))
+                .findFirst()
+                .get());
     }
 }
