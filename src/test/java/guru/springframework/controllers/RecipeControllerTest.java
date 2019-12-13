@@ -16,6 +16,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class RecipeControllerTest {
 
     private static final Long RECIPE_ID = 4L;
+    private static final String RECIPE_DESCRIPTION = "dummy";
+    private static final Integer RECIPE_COOK_TIME = 10;
+    private static final Integer RECIPE_PREP_TIME = 10;
+    private static final Integer RECIPE_SERVINGS = 10;
+    private static final String RECIPE_URL = "https://www.example.com";
+    private static final String RECIPE_DIRECTIONS = "dummy";
 
     @Mock
     RecipeService recipeService;
@@ -72,10 +78,29 @@ public class RecipeControllerTest {
         command.setId(RECIPE_ID);
         Mockito.when(recipeService.saveRecipeCommand(ArgumentMatchers.any())).thenReturn(command);
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/recipe/"))
+                .post("/recipe/")
+                .param("cookTime", String.valueOf(RECIPE_COOK_TIME))
+                .param("prepTime", String.valueOf(RECIPE_PREP_TIME))
+                .param("servings", String.valueOf(RECIPE_SERVINGS))
+                .param("directions", RECIPE_DIRECTIONS)
+                .param("description", RECIPE_DESCRIPTION)
+                .param("url", RECIPE_URL)
+        )
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/" + RECIPE_ID + "/show"));
         Mockito.verify(recipeService, Mockito.times(1)).saveRecipeCommand(ArgumentMatchers.any());
+    }
+
+    @Test
+    public void saveOrUpdateFail() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/recipe/")
+                .param("servings", String.valueOf(RECIPE_SERVINGS))
+                .param("directions", RECIPE_DIRECTIONS)
+        )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("recipe/recipeform"));
+        Mockito.verifyZeroInteractions(recipeService);
     }
 
     @Test

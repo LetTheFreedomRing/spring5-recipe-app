@@ -4,6 +4,7 @@ import guru.springframework.commands.RecipeCommand;
 import guru.springframework.converters.*;
 import guru.springframework.model.Recipe;
 import guru.springframework.repositories.RecipeRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class RecipeServiceImplIT {
 
     private static final Long RECIPE_ID = 1L;
     private static final String RECIPE_DESCRIPTION = "dummy";
+    private static final String RECIPE_DIRECTIONS = "dummy";
+
 
     @Autowired
     RecipeCommandToRecipe recipeCommandConverter;
@@ -35,11 +38,16 @@ public class RecipeServiceImplIT {
     @Autowired
     RecipeService service;
 
+    private RecipeCommand recipeCommand;
+
+
     @Test
     @Transactional
     public void saveOrUpdate() {
         RecipeCommand recipeCommand = new RecipeCommand();
         recipeCommand.setId(RECIPE_ID);
+        recipeCommand.setDescription(RECIPE_DESCRIPTION);
+        recipeCommand.setDirections(RECIPE_DIRECTIONS);
         RecipeCommand savedCommand = service.saveRecipeCommand(recipeCommand);
         assertNotNull(savedCommand);
         assertEquals(RECIPE_ID, savedCommand.getId());
@@ -52,6 +60,7 @@ public class RecipeServiceImplIT {
         Recipe recipe = recipes.iterator().next();
         RecipeCommand command = recipeConverter.convert(recipe);
         command.setDescription(RECIPE_DESCRIPTION);
+        command.setDirections(RECIPE_DIRECTIONS);
         RecipeCommand savedCommand = service.saveRecipeCommand(command);
         assertEquals(command.getId(), savedCommand.getId());
         assertEquals(command.getCategories().size(), savedCommand.getCategories().size());
