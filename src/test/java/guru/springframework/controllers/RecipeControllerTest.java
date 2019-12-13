@@ -45,13 +45,16 @@ public class RecipeControllerTest {
 
     @Test
     public void showByIdNotFound() throws Exception {
-        Recipe recipe = new Recipe();
-        recipe.setId(RECIPE_ID);
-
         Mockito.when(recipeService.getRecipeById(ArgumentMatchers.anyLong())).thenThrow(NotFoundException.class);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/recipe/{recipeId}/show",  RECIPE_ID))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void showByIdBadRequest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/{recipeId}/show",  "bad request"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
