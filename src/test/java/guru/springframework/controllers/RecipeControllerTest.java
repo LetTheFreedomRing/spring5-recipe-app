@@ -1,6 +1,7 @@
 package guru.springframework.controllers;
 
 import guru.springframework.commands.RecipeCommand;
+import guru.springframework.exceptions.NotFoundException;
 import guru.springframework.model.Recipe;
 import guru.springframework.services.RecipeService;
 import org.junit.Before;
@@ -40,6 +41,17 @@ public class RecipeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("recipe/show"))
                 .andExpect(MockMvcResultMatchers.model().attribute("recipe", recipe));
+    }
+
+    @Test
+    public void showByIdNotFound() throws Exception {
+        Recipe recipe = new Recipe();
+        recipe.setId(RECIPE_ID);
+
+        Mockito.when(recipeService.getRecipeById(ArgumentMatchers.anyLong())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/{recipeId}/show",  RECIPE_ID))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
