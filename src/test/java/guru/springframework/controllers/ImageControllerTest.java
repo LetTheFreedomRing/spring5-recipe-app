@@ -31,7 +31,9 @@ public class ImageControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new ControllerExceptionHandler())
+                .build();
     }
 
     @Test
@@ -56,6 +58,15 @@ public class ImageControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.view().name("redirect:/recipe/" + recipeId + "/show"));
         Mockito.verify(imageService, Mockito.times(1)).saveImage(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
+    }
+
+    @Test
+    public void showByIdBadRequest() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("imagefile", "testing.txt",
+                "text/plain", "Dummy".getBytes());
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/recipe/sdkfjksd/image").file(file))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        Mockito.verifyZeroInteractions(imageService);
     }
 
     @Test
