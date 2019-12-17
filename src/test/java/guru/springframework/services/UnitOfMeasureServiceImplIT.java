@@ -27,7 +27,7 @@ public class UnitOfMeasureServiceImplIT {
     @Test
     public void listAllUoms() {
         Set<UnitOfMeasureCommand> commands = unitOfMeasureService.listAllUoms();
-        // added 7 uoms in data.sql
+        // added 7 uoms in data-h2.sql
         assertEquals(7, commands.size());
     }
 
