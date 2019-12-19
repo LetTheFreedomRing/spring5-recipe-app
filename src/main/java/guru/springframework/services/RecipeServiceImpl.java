@@ -7,8 +7,13 @@ import guru.springframework.exceptions.NotFoundException;
 import guru.springframework.model.Recipe;
 import guru.springframework.repositories.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -16,6 +21,9 @@ import java.util.Set;
 @Slf4j
 @Service
 public class RecipeServiceImpl implements RecipeService {
+
+    @Value("classpath:static/images/default_recipe_image.jpg")
+    private Resource defaultImage;
 
     private final RecipeRepository recipeRepository;
     private final RecipeCommandToRecipe recipeCommandConverter;
@@ -46,6 +54,14 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+        if (command.getId() == null) {
+            Byte[] bytes = getDefaultImageBytes();
+            command.setImage(bytes);
+        } else {
+            // can ignore this warning, because recipe exists in repo
+            Recipe recipe = recipeRepository.findById(command.getId()).get();
+            command.setImage(recipe.getImage());
+        }
         Recipe savedRecipe = recipeRepository.save(recipeCommandConverter.convert(command));
         log.debug("Saved recipe id : " + savedRecipe.getId());
         return recipeConverter.convert(savedRecipe);
@@ -60,5 +76,23 @@ public class RecipeServiceImpl implements RecipeService {
     public void deleteById(Long id) {
         recipeRepository.deleteById(id);
         log.debug("Deleted recipe id : " + id);
+    }
+
+    private Byte[] getDefaultImageBytes() {
+        try {
+            File imageFile =  defaultImage.getFile();
+            log.debug("File exists : " + imageFile.exists());
+            byte[] bytes = Files.readAllBytes(imageFile.toPath());
+            Byte[] res = new Byte[bytes.length];
+            int i = 0;
+            for (byte b : bytes) {
+                res[i++] = b;
+            }
+            return res;
+
+        } catch (IOException e) {
+            log.error("getDefaultImage() error : " + e.getMessage());
+        }
+        return null;
     }
 }
